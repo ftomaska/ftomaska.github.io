@@ -119,6 +119,19 @@
     text-decoration: none;
     color: var(--ink);
   }
+  .shutter-toggle {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: color .15s ease;
+  }
+  .shutter-toggle:hover, .shutter-toggle:focus-visible { color: var(--accent-green); }
   .navlinks {
     display: flex;
     gap: 22px;
@@ -431,6 +444,7 @@
 
 <nav class="topnav" id="top">
   <div class="topnav-inner">
+    <button type="button" id="shutter-toggle" class="shutter-toggle" aria-pressed="false">shutter open</button>
     <ul class="navlinks" style="margin-left: auto;">
       <li><a href="#about">About</a></li>
       <li><a href="#signal">Signal</a></li>
@@ -575,7 +589,7 @@
     <div class="wrap">
       <div class="contact-row">
         <div>
-          <div class="eyebrow"><span class="dot green"></span> Contact</div>
+          <div class="eyebrow">Contact</div>
           <div class="contact-links">
             <a href="mailto:filip_tomaska@ucsb.edu">filip_tomaska@ucsb.edu</a>
             <a href="https://github.com/ftomaska" target="_blank" rel="noopener">github.com/ftomaska</a>
@@ -858,6 +872,22 @@
       window.open(url, 'posterWindow', 'width=1000,height=760,noopener,scrollbars=yes,resizable=yes');
     });
   }
+})();
+</script>
+
+<script>
+(function () {
+  var btn = document.getElementById('shutter-toggle');
+  var hero = document.querySelector('.hero');
+  var main = document.querySelector('main');
+  if (!btn || !hero || !main) return;
+  btn.addEventListener('click', function () {
+    var closed = btn.getAttribute('aria-pressed') !== 'true';
+    btn.setAttribute('aria-pressed', String(closed));
+    btn.textContent = closed ? 'shutter closed' : 'shutter open';
+    hero.hidden = closed;
+    main.hidden = closed;
+  });
 })();
 </script>
 
