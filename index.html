@@ -432,6 +432,68 @@
   }
   .contact-links a { text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; }
   .contact-links a:hover, .contact-links a:focus-visible { border-color: var(--accent-green); }
+  .sig-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .doodle-frame {
+    position: relative;
+    width: 78px;
+    height: 84px;
+  }
+  .doodle-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    transition: transform .08s linear;
+  }
+  .doodle-a {
+    mask-image: repeating-linear-gradient(to bottom, black 0 4px, transparent 4px 8px);
+    -webkit-mask-image: repeating-linear-gradient(to bottom, black 0 4px, transparent 4px 8px);
+  }
+  .doodle-b {
+    mask-image: repeating-linear-gradient(to bottom, transparent 0 4px, black 4px 8px);
+    -webkit-mask-image: repeating-linear-gradient(to bottom, transparent 0 4px, black 4px 8px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .doodle-layer { filter: invert(1); }
+  }
+  :root[data-theme="dark"] .doodle-layer { filter: invert(1); }
+  .phase-adjust {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .phase-adjust button {
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    width: 22px;
+    height: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .phase-adjust button:hover, .phase-adjust button:focus-visible {
+    color: var(--accent-green);
+    border-color: var(--accent-green);
+  }
   .sig {
     font-family: var(--font-mono);
     font-size: 11.5px;
@@ -596,7 +658,18 @@
             <a href="https://bsky.app/profile/filip-tomaska.bsky.social" target="_blank" rel="noopener">bsky.app/profile/filip-tomaska.bsky.social</a>
           </div>
         </div>
-        <div class="sig">Smith Lab · UC Santa Barbara</div>
+        <div class="sig-block">
+          <div class="doodle-frame">
+            <img class="doodle-layer doodle-a" src="assets/sitting-doodle.png" alt="" aria-hidden="true">
+            <img class="doodle-layer doodle-b" src="assets/sitting-doodle.png" alt="" aria-hidden="true">
+          </div>
+          <div class="phase-adjust">
+            <button type="button" id="phase-left" aria-label="Decrease resonant scan phase">◀</button>
+            <span>phase adjust</span>
+            <button type="button" id="phase-right" aria-label="Increase resonant scan phase">▶</button>
+          </div>
+          <div class="sig">Smith Lab · UC Santa Barbara</div>
+        </div>
       </div>
     </div>
   </footer>
@@ -888,6 +961,38 @@
     hero.hidden = closed;
     main.hidden = closed;
   });
+})();
+</script>
+
+<script>
+(function () {
+  var leftBtn = document.getElementById('phase-left');
+  var rightBtn = document.getElementById('phase-right');
+  var layerA = document.querySelector('.doodle-a');
+  var layerB = document.querySelector('.doodle-b');
+  if (!leftBtn || !rightBtn || !layerA || !layerB) return;
+
+  var PHASE_MIN = -6;
+  var PHASE_MAX = 6;
+  var PX_PER_STEP = 2.5; // px of line-to-line shear per phase unit
+  var phase = 4; // dealigned by default
+
+  function render() {
+    var shift = phase * PX_PER_STEP;
+    layerA.style.transform = 'translateX(' + shift + 'px)';
+    layerB.style.transform = 'translateX(' + (-shift) + 'px)';
+  }
+
+  leftBtn.addEventListener('click', function () {
+    phase = Math.max(PHASE_MIN, phase - 1);
+    render();
+  });
+  rightBtn.addEventListener('click', function () {
+    phase = Math.min(PHASE_MAX, phase + 1);
+    render();
+  });
+
+  render();
 })();
 </script>
 
