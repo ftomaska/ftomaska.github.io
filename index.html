@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Filip Tomáška</title>
+<style>
+  :root {
+    --bg: #f1f4ef;
+    --bg-raised: #e6eae0;
+    --ink: #14181a;
+    --ink-soft: #3c4640;
+    --muted: #5c6b62;
+    --line: rgba(20,24,26,0.14);
+    --accent-green: #2fa365;
+    --accent-magenta: #d1453d;
+    --accent-red-light: #d1453d;
+    --accent-green-soft: rgba(47,163,101,0.12);
+    --accent-magenta-soft: rgba(209,69,61,0.10);
+    --shadow: rgba(20,24,26,0.08);
+    --font-display: 'Times New Roman', Times, 'Liberation Serif', Georgia, serif;
+    --font-body: 'Times New Roman', Times, 'Liberation Serif', Georgia, serif;
+    --font-mono: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b0f0d;
+      --bg-raised: #121712;
+      --ink: #eef2ee;
+      --ink-soft: #c7d0c9;
+      --muted: #8a9a8d;
+      --line: rgba(238,242,238,0.14);
+      --accent-green: #6dffb0;
+      --accent-magenta: #ff8a80;
+      --accent-red-light: #ff8a80;
+      --accent-green-soft: rgba(109,255,176,0.12);
+      --accent-magenta-soft: rgba(255,138,128,0.12);
+      --shadow: rgba(0,0,0,0.4);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0b0f0d;
+    --bg-raised: #121712;
+    --ink: #eef2ee;
+    --ink-soft: #c7d0c9;
+    --muted: #8a9a8d;
+    --line: rgba(238,242,238,0.14);
+    --accent-green: #6dffb0;
+    --accent-magenta: #ff8a80;
+    --accent-red-light: #ff8a80;
+    --accent-green-soft: rgba(109,255,176,0.12);
+    --accent-magenta-soft: rgba(255,138,128,0.12);
+    --shadow: rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { color-scheme: light dark; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-green-soft); color: var(--ink); }
+
+  a { color: inherit; }
+
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-inline: 24px;
+  }
+
+  .wide {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding-inline: 24px;
+  }
+
+  /* ---------- nav ---------- */
+  .topnav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topnav-inner {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .navlinks {
+    display: flex;
+    gap: 22px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+  }
+  .navlinks a {
+    text-decoration: none;
+    color: var(--muted);
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .navlinks a:hover, .navlinks a:focus-visible { color: var(--ink); border-color: var(--accent-green); }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    padding: 64px 0 40px;
+    overflow: hidden;
+  }
+  .hero-inner { position: relative; z-index: 2; }
+  #trace {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.55;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 18px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex: none;
+    display: inline-block;
+  }
+  .dot.green { background: var(--accent-green); box-shadow: 0 0 0 3px var(--accent-green-soft); }
+  .dot.magenta { background: var(--accent-magenta); box-shadow: 0 0 0 3px var(--accent-magenta-soft); }
+
+  h1.name {
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+  }
+  .name-alt {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 6px 0 0;
+  }
+
+  .thesis {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    color: var(--ink-soft);
+    max-width: 34ch;
+    margin-top: 22px;
+  }
+
+  .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 34px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+  }
+  .legend-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .ch-toggle {
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    color: var(--ink-soft);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: color .15s ease, opacity .15s ease;
+  }
+  .ch-toggle:hover, .ch-toggle:focus-visible { color: var(--accent-green); }
+  .ch-toggle[data-channel="magenta"]:hover, .ch-toggle[data-channel="magenta"]:focus-visible { color: var(--accent-magenta); }
+  .ch-toggle[aria-pressed="false"] {
+    color: var(--muted);
+    opacity: 0.55;
+    text-decoration: line-through;
+    text-decoration-color: var(--muted);
+  }
+
+  .indicator-pick {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .indicator-pick select {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 2px 0;
+    margin: 0;
+    cursor: pointer;
+    appearance: auto;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .indicator-pick select:hover,
+  .indicator-pick select:focus-visible {
+    color: var(--accent-green);
+    border-bottom-color: var(--accent-green);
+    outline: none;
+  }
+  .indicator-pick select option { color: var(--ink); background: var(--bg-raised); }
+
+  /* ---------- sections ---------- */
+  section { padding: 56px 0; }
+  section + section { border-top: 1px solid var(--line); }
+
+  .section-head { margin-bottom: 30px; }
+  .section-head .eyebrow { margin-bottom: 10px; }
+  .section-head h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
+  p.dek { color: var(--muted); font-size: 0.98rem; margin-top: 8px; max-width: 56ch; }
+
+  .section-head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px 28px;
+  }
+
+  .gain-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .gain-control input[type="range"] {
+    width: 110px;
+    accent-color: var(--accent-green);
+  }
+  .gain-control .gain-readout {
+    min-width: 5.5ch;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+  }
+
+  .signal-body { position: relative; transition: opacity .12s linear; }
+  .signal-body .whiteout {
+    position: absolute;
+    inset: -8px;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 5;
+    transition: opacity .12s linear;
+  }
+
+  p { margin: 0 0 1em; }
+  .lede { color: var(--ink-soft); }
+  .inline-link {
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+    transition: color .15s ease, text-decoration-color .15s ease;
+  }
+  .inline-link:hover, .inline-link:focus-visible {
+    color: var(--accent-green);
+    text-decoration-color: var(--accent-green);
+  }
+
+  /* ---------- cards ---------- */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .card {
+    background: var(--bg);
+    padding: 22px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .card h3 { font-size: 1.12rem; font-weight: 600; }
+  .status {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    color: var(--muted);
+    white-space: nowrap;
+    flex: none;
+    padding-top: 3px;
+  }
+  .card p { font-size: 0.94rem; color: var(--ink-soft); margin: 0; flex: 1; }
+  .card .link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-decoration: none;
+    color: var(--accent-green);
+    border-bottom: 1px solid transparent;
+  }
+  .card .link:hover, .card .link:focus-visible { border-color: var(--accent-green); }
+  .card.magenta .link { color: var(--accent-magenta); }
+  .card.magenta .link:hover, .card.magenta .link:focus-visible { border-color: var(--accent-magenta); }
+
+  .note {
+    margin-top: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    padding: 12px 14px;
+    border: 1px dashed var(--line);
+    background: var(--bg-raised);
+  }
+
+  /* ---------- field notes ---------- */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chip {
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    padding: 9px 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .chip b { font-weight: 600; color: var(--ink); }
+
+  /* ---------- contact / footer ---------- */
+  footer {
+    padding: 56px 0 72px;
+  }
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+  }
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .contact-links a { text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; }
+  .contact-links a:hover, .contact-links a:focus-visible { border-color: var(--accent-green); }
+  .sig {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  :focus-visible { outline: 2px solid var(--accent-green); outline-offset: 2px; }
+</style>
+
+<nav class="topnav" id="top">
+  <div class="topnav-inner">
+    <ul class="navlinks" style="margin-left: auto;">
+      <li><a href="#about">About</a></li>
+      <li><a href="#signal">Signal</a></li>
+      <li><a href="#expression">Expression</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="trace" aria-hidden="true"></canvas>
+  <div class="wide hero-inner">
+    <h1 class="name">Filip Tomaska</h1>
+    <p class="name-alt">Filip Tomáška</p>
+    <p class="thesis">Developing tools for big questions in neuroscience.</p>
+    <div class="legend">
+      <div class="legend-row">
+        <button type="button" class="ch-toggle" data-channel="green" aria-pressed="true">ch1 · signal</button>
+        <span class="legend-desc">- developing tools, hardware, software, to enable better neuroscience</span>
+      </div>
+      <div class="legend-row">
+        <button type="button" class="ch-toggle" data-channel="magenta" aria-pressed="true">ch2 · expression</button>
+        <span class="legend-desc">- packaging ideas into palatable form, some more useful than other</span>
+      </div>
+    </div>
+    <div class="indicator-pick">
+      <label for="indicator-select">Indicator</label>
+      <select id="indicator-select" aria-label="Calcium/voltage indicator kinetics">
+        <option value="gcamp6s" selected>GCaMP6s</option>
+        <option value="jgcamp8f">jGCaMP8f</option>
+        <option value="jgcamp8m">jGCaMP8m</option>
+        <option value="jgcamp8s">jGCaMP8s</option>
+        <option value="asap">ASAP</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="about">
+    <div class="wrap">
+      <p class="lede">I'm <a class="inline-link drawing-link" href="assets/filip-drawing.png">Filip</a>. I'm a PhD candidate in the <a class="inline-link" href="https://dyns.ucsb.edu" target="_blank" rel="noopener">Dynamical Neuroscience</a> program at UCSB.</p>
+      <p>I work in <a class="inline-link" href="https://slslab.org/" target="_blank" rel="noopener">Spencer LaVere Smith's lab</a>, where we build multiphoton imaging hardware to answer questions about neuronal computation in mouse cortex.</p>
+      <p>My main project is to add holographic optomanipulation functionality to Diesel2p, enabling single-cell read and write capability over a 25&nbsp;mm² plane of mouse cortex.</p>
+      <p>I found my way into tool development through <em>in vivo</em> testing of biological sensors during my time at Janelia with <a class="inline-link" href="https://www.janelia.org/lab/schreiter-lab" target="_blank" rel="noopener">Eric Schreiter</a> and <a class="inline-link" href="https://alleninstitute.org/person/kaspar-podgorski" target="_blank" rel="noopener">Kaspar Podgorski</a> (2019–2021).</p>
+      <p>Today, I get to work with Che-Hang Yu and the rest of the lab developing large FOV optical systems for neurophysiology.</p>
+      <p>I enjoy working on projects that have potential for dissemination and reach a high standard in both rigor and presentation/user experience.</p>
+    </div>
+  </section>
+
+  <section id="signal">
+    <div class="wide">
+      <div class="section-head">
+        <div class="eyebrow"><span class="dot green"></span> CH1 — Signal</div>
+        <div class="section-head-row">
+          <h2>Research</h2>
+          <div class="gain-control">
+            <label for="ch1-gain">ch1 gain</label>
+            <input type="range" id="ch1-gain" min="0.2" max="1.4" step="0.01" value="0.8">
+            <span class="gain-readout" id="ch1-gain-readout">0.80 V</span>
+          </div>
+        </div>
+      </div>
+      <div class="signal-body" id="signal-body">
+        <div class="whiteout" id="signal-whiteout" aria-hidden="true"></div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-top"><h3>iGluSnFR3</h3><span class="status">Published 2023</span></div>
+            <p>A new version of a genetically encoded glutamate sensor for synaptic transmission with improved kinetics and synaptic membrane localization.</p>
+            <a class="link" href="https://doi.org/10.1038/s41592-023-01863-6" target="_blank" rel="noopener">Aggarwal et al. 2023 →</a>
+          </div>
+          <div class="card">
+            <div class="card-top"><h3>WHaloCaMP</h3><span class="status">Published 2024</span></div>
+            <p>A modular chemigenetic calcium indicator built on a HaloTag-dye scaffold for multiplexed in vivo functional imaging.</p>
+            <a class="link" href="https://doi.org/10.1038/s41592-024-02411-6" target="_blank" rel="noopener">Farrants et al. 2024 →</a>
+          </div>
+          <div class="card">
+            <div class="card-top"><h3>Calcium imaging standards</h3><span class="status">Publication in review</span></div>
+            <p>Exploring kurtosis as a quick way of assessing calcium signal quality. Photons/cell/second as a crucial parameter for signal quality.</p>
+            <a class="link" href="https://labrigger.com/blog/2026/07/25/2p-calcium-imaging-fidelity/" target="_blank" rel="noopener">labrigger.com — 2p calcium imaging fidelity →</a>
+          </div>
+          <div class="card">
+            <div class="card-top"><h3>Large FOV optomanipulation</h3><span class="status">Ongoing</span></div>
+            <p>Adding holographic optomanipulation to Diesel2p, enabling single-cell read and write capability over a 25&nbsp;mm² plane of mouse cortex.</p>
+            <a class="link poster-link" href="assets/PosterSLB.pdf" target="_blank" rel="noopener">View poster →</a>
+          </div>
+          <div class="card">
+            <div class="card-top"><h3>Scan angle multiplier</h3><span class="status">Published 2026</span></div>
+            <p>A non-inertial scan angle multiplier that expands the addressable field of view for calcium imaging.</p>
+            <a class="link" href="https://doi.org/10.1364/OPTICA.570761" target="_blank" rel="noopener">Yu et al. 2026 →</a>
+          </div>
+          <div class="card">
+            <div class="card-top"><h3>Inter-areal functional connectivity in mouse visual cortex</h3><span class="status">Ongoing</span></div>
+            <p>Using the Diesel2p platform with optostimulation, we are trying to explore connectivity patterns and information processing from V1 to LM.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="expression">
+    <div class="wide">
+      <div class="section-head">
+        <div class="eyebrow"><span class="dot magenta"></span> CH2 — Expression</div>
+        <div class="section-head-row">
+          <h2>Night Science</h2>
+          <div class="gain-control">
+            <label for="ch2-gain">ch2 gain</label>
+            <input type="range" id="ch2-gain" min="0.2" max="1.4" step="0.01" value="0.8">
+            <span class="gain-readout" id="ch2-gain-readout">0.80 V</span>
+          </div>
+        </div>
+        <p class="dek">Self expression in the realm outside peer-review.</p>
+      </div>
+      <div class="signal-body" id="expression-body">
+        <div class="whiteout" id="expression-whiteout" aria-hidden="true"></div>
+        <div class="cards">
+          <div class="card magenta">
+            <div class="card-top"><h3>ROI Blink Overlay</h3><span class="status">Released</span></div>
+            <p>A Python/tkinter GUI that renders calcium imaging activity as blinking ROI overlays on mean projection images, exported as MP4.</p>
+            <a class="link" href="https://github.com/ftomaska/roi-blink-overlay" target="_blank" rel="noopener">github.com/ftomaska/roi-blink-overlay →</a>
+          </div>
+          <div class="card magenta">
+            <div class="card-top"><h3>Calcium standards paper apps</h3><span class="status">Released</span></div>
+            <p>A suite of GUIs and tools that let readers of our paper run their own data through it, to see if our claims about kurtosis, neuropil subtraction, and the rest generalize to their use case.</p>
+            <a class="link" href="https://github.com/ftomaska/phase-diagram" target="_blank" rel="noopener">github.com/ftomaska/phase-diagram →</a>
+            <a class="link" href="https://github.com/ftomaska/kurtosis-gain-checker" target="_blank" rel="noopener">github.com/ftomaska/kurtosis-gain-checker →</a>
+          </div>
+          <div class="card magenta">
+            <div class="card-top"><h3>Neuron Music</h3><span class="status">Early stage</span></div>
+            <p>An in-progress project turning recorded neural activity into sound. Still shaping the approach — more to share soon.</p>
+          </div>
+          <div class="card magenta">
+            <div class="card-top"><h3>Mouse vs. Hominid</h3><span class="status">Working title</span></div>
+            <p>A comparative piece currently taking shape. Details to follow once it's further along.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="wrap">
+      <div class="contact-row">
+        <div>
+          <div class="eyebrow"><span class="dot green"></span> Contact</div>
+          <div class="contact-links">
+            <a href="mailto:filip_tomaska@ucsb.edu">filip_tomaska@ucsb.edu</a>
+            <a href="https://github.com/ftomaska" target="_blank" rel="noopener">github.com/ftomaska</a>
+            <a href="https://bsky.app/profile/filip-tomaska.bsky.social" target="_blank" rel="noopener">bsky.app/profile/filip-tomaska.bsky.social</a>
+          </div>
+        </div>
+        <div class="sig">Smith Lab · UC Santa Barbara</div>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var canvas = document.getElementById('trace');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var w, h, t = 0;
+
+  function styleColor(varName, fallback) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(varName);
+    return v ? v.trim() : fallback;
+  }
+
+  // Resolve trace colors once (and again only on an actual theme change),
+  // rather than forcing a style recalculation every animation frame — that
+  // per-frame getComputedStyle call was the source of the flicker/stutter.
+  var colors = { green: '#1f8f5a', magenta: '#a8306e' };
+  function refreshColors() {
+    colors.green = styleColor('--accent-green', colors.green);
+    colors.magenta = styleColor('--accent-magenta', colors.magenta);
+  }
+
+  function resize() {
+    var rect = canvas.parentElement.getBoundingClientRect();
+    w = rect.width;
+    h = rect.height;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  var PPU = 5; // canvas pixels per virtual time-unit
+
+  // A GCaMP-style calcium transient: near-instant rise, slower exponential decay.
+  function kernel(dt, tauRise, tauDecay) {
+    if (dt < 0) return 0;
+    return (1 - Math.exp(-dt / tauRise)) * Math.exp(-dt / tauDecay);
+  }
+
+  function makeChannel(opts) {
+    return {
+      spikes: [],
+      nextTime: 0,
+      tauRise: opts.tauRise,
+      tauDecay: opts.tauDecay,
+      minGap: opts.minGap,
+      maxGap: opts.maxGap,
+      ampMin: opts.ampMin,
+      ampMax: opts.ampMax
+    };
+  }
+
+  // Burst structure (~55% isolated events, remainder short clustered runs
+  // with a geometric-ish run length) modeled on an MCMC spike-inference
+  // posterior: real samples cluster tightly around a true event about 37%
+  // of the time, with a heavy-tailed run length, rather than firing as
+  // uniformly isolated events.
+  function ensureSpikes(ch, uptoTime) {
+    while (ch.nextTime < uptoTime) {
+      ch.nextTime += ch.minGap + Math.random() * (ch.maxGap - ch.minGap);
+      var burstLen = 1;
+      while (Math.random() < 0.45 && burstLen < 7) burstLen++;
+      for (var b = 0; b < burstLen; b++) {
+        if (b > 0) ch.nextTime += 0.15 + Math.random() * 0.85;
+        ch.spikes.push({ time: ch.nextTime, amp: ch.ampMin + Math.random() * (ch.ampMax - ch.ampMin) });
+      }
+    }
+    while (ch.spikes.length && ch.spikes[0].time < uptoTime - 6 * ch.tauDecay - 400) {
+      ch.spikes.shift();
+    }
+  }
+
+  function channelValue(ch, time) {
+    var v = 0;
+    for (var i = 0; i < ch.spikes.length; i++) {
+      var dt = time - ch.spikes[i].time;
+      if (dt < 0) continue;
+      v += kernel(dt, ch.tauRise, ch.tauDecay) * ch.spikes[i].amp;
+    }
+    return v;
+  }
+
+  // Reported kinetics differ mainly in onset speed and decay tau; ASAP is a
+  // voltage indicator so both are much faster than any calcium sensor here.
+  // ASAP's fluorescence also *drops* on depolarization rather than rising,
+  // so it gets a negative polarity while every GCaMP variant is positive.
+  var INDICATORS = {
+    gcamp6s:  { tauRise: 0.8,  tauDecay: 30,  polarity: 1  },
+    jgcamp8f: { tauRise: 0.22, tauDecay: 5,   polarity: 1  },
+    jgcamp8m: { tauRise: 0.32, tauDecay: 9,   polarity: 1  },
+    jgcamp8s: { tauRise: 0.5,  tauDecay: 16,  polarity: 1  },
+    asap:     { tauRise: 0.12, tauDecay: 1.8, polarity: -1 }
+  };
+  var currentIndicator = 'gcamp6s';
+
+  var chGreen = makeChannel({ minGap: 16, maxGap: 52, ampMin: 0.5, ampMax: 1 });
+  var chMagenta = makeChannel({ minGap: 34, maxGap: 96, ampMin: 0.55, ampMax: 1.1 });
+
+  // Deterministic gaussian value-noise keyed by virtual time (not frame count),
+  // so the noise texture rides along with the trace like real scope/photon
+  // noise instead of flickering independently every repaint.
+  function hash01(n) {
+    var x = Math.sin(n) * 43758.5453123;
+    return x - Math.floor(x);
+  }
+  function gaussianAt(i, seed) {
+    var u = Math.max(hash01(i * 12.9898 + seed * 78.233), 1e-6);
+    var v = hash01(i * 39.346 + seed * 11.135 + 4.0);
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+  function traceNoise(time, seed) {
+    var scale = 1.5;
+    var ti = Math.floor(time * scale);
+    var f = time * scale - ti;
+    var a = gaussianAt(ti, seed);
+    var b = gaussianAt(ti + 1, seed);
+    return a + (b - a) * f;
+  }
+
+  function drawChannel(ch, time0, color, baseline, ampScale, lineWidth, noiseSigma, noiseSeed, polarity) {
+    ensureSpikes(ch, time0 + w / PPU + 40);
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    for (var x = 0; x <= w; x += 3) {
+      var time = time0 + x / PPU;
+      var y = baseline - polarity * channelValue(ch, time) * ampScale + traceNoise(time, noiseSeed) * noiseSigma;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  // Raster ticks for the underlying spike events being convolved into the trace.
+  function drawTicks(ch, time0, baseline, color, tickLen) {
+    var t0 = time0, t1 = time0 + w / PPU;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.8;
+    for (var i = 0; i < ch.spikes.length; i++) {
+      var s = ch.spikes[i];
+      if (s.time < t0 || s.time > t1) continue;
+      var x = (s.time - time0) * PPU;
+      ctx.beginPath();
+      ctx.moveTo(x, baseline + 6);
+      ctx.lineTo(x, baseline + 6 + tickLen);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  var channelOn = { green: true, magenta: true };
+
+  function render() {
+    ctx.clearRect(0, 0, w, h);
+    var kin = INDICATORS[currentIndicator];
+    chGreen.tauRise = kin.tauRise;
+    chGreen.tauDecay = kin.tauDecay;
+    chMagenta.tauRise = kin.tauRise;
+    chMagenta.tauDecay = kin.tauDecay;
+    var baseline1 = h * 0.70;
+    var baseline2 = h * 0.88;
+    if (channelOn.green) {
+      drawChannel(chGreen, t, colors.green, baseline1, h * 0.165, 1.4, h * 0.006, 1.7, kin.polarity);
+      drawTicks(chGreen, t, baseline1, colors.green, 9);
+    }
+    if (channelOn.magenta) {
+      drawChannel(chMagenta, t * 0.85, colors.magenta, baseline2, h * 0.1125, 1.1, h * 0.005, 9.3, kin.polarity);
+      drawTicks(chMagenta, t * 0.85, baseline2, colors.magenta, 7);
+    }
+  }
+
+  var indicatorSelect = document.getElementById('indicator-select');
+  if (indicatorSelect) {
+    indicatorSelect.addEventListener('change', function () {
+      currentIndicator = this.value;
+      if (reduceMotion) render();
+    });
+  }
+
+  // ch1/ch2 legend labels double as mute toggles for their trace.
+  var chToggles = document.querySelectorAll('.ch-toggle');
+  for (var ci = 0; ci < chToggles.length; ci++) {
+    chToggles[ci].addEventListener('click', function () {
+      var channel = this.getAttribute('data-channel');
+      channelOn[channel] = !channelOn[channel];
+      this.setAttribute('aria-pressed', String(channelOn[channel]));
+      if (reduceMotion) render();
+    });
+  }
+
+  // Theme can flip without a reload (OS-level dark/light switch); re-resolve
+  // the cached colors when that happens instead of re-querying every frame.
+  if (window.matchMedia) {
+    var darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    var onThemeChange = function () { refreshColors(); if (reduceMotion) render(); };
+    if (darkQuery.addEventListener) darkQuery.addEventListener('change', onThemeChange);
+  }
+
+  var UNITS_PER_SEC = 15; // matches the previous ~0.25 units/frame at 60fps
+  var lastTs = null;
+  function frame(ts) {
+    var dt = 0;
+    if (lastTs !== null) dt = Math.min((ts - lastTs) / 1000, 0.1);
+    lastTs = ts;
+    t += dt * UNITS_PER_SEC;
+    render();
+    if (!reduceMotion) requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  refreshColors();
+  if (reduceMotion) {
+    render();
+  } else {
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+
+<script>
+(function () {
+  function wireGain(sliderId, readoutId, bodyId, whiteoutId) {
+    var slider = document.getElementById(sliderId);
+    var readout = document.getElementById(readoutId);
+    var body = document.getElementById(bodyId);
+    var whiteout = document.getElementById(whiteoutId);
+    if (!slider || !body || !whiteout) return;
+
+    var GAIN_MIN = parseFloat(slider.min);   // 0.2 V — signal too dim to read
+    var GAIN_DEFAULT = 0.8;                  // nominal operating point
+    var GAIN_MAX = parseFloat(slider.max);   // 1.4 V — detector saturates
+
+    function apply(v) {
+      readout.textContent = v.toFixed(2) + ' V';
+      if (v <= GAIN_DEFAULT) {
+        var t = (v - GAIN_MIN) / (GAIN_DEFAULT - GAIN_MIN);
+        t = Math.max(0, Math.min(1, t));
+        body.style.opacity = String(t);
+        whiteout.style.opacity = '0';
+      } else {
+        var t2 = (v - GAIN_DEFAULT) / (GAIN_MAX - GAIN_DEFAULT);
+        t2 = Math.max(0, Math.min(1, t2));
+        body.style.opacity = '1';
+        whiteout.style.opacity = String(t2);
+      }
+    }
+
+    slider.addEventListener('input', function () { apply(parseFloat(slider.value)); });
+    apply(parseFloat(slider.value));
+  }
+
+  wireGain('ch1-gain', 'ch1-gain-readout', 'signal-body', 'signal-whiteout');
+  wireGain('ch2-gain', 'ch2-gain-readout', 'expression-body', 'expression-whiteout');
+})();
+</script>
+
+<script>
+(function () {
+  var posterLinks = document.querySelectorAll('.poster-link');
+  for (var i = 0; i < posterLinks.length; i++) {
+    posterLinks[i].addEventListener('click', function (e) {
+      e.preventDefault();
+      var url = this.getAttribute('href');
+      window.open(url, 'posterWindow', 'width=1000,height=760,noopener,scrollbars=yes,resizable=yes');
+    });
+  }
+})();
+</script>
+
+<script>
+(function () {
+  var drawingLinks = document.querySelectorAll('.drawing-link');
+  for (var i = 0; i < drawingLinks.length; i++) {
+    drawingLinks[i].addEventListener('click', function (e) {
+      e.preventDefault();
+      var url = this.getAttribute('href');
+      window.open(url, 'filipDrawing', 'width=620,height=700,noopener,scrollbars=yes,resizable=yes');
+    });
+  }
+})();
+</script>
+</body>
+</html>
