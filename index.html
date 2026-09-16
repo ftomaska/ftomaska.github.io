@@ -684,7 +684,7 @@
   var canvas = document.getElementById('trace');
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
-  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduceMotion = false; // trace animation is decorative, not motion-sensitive-triggering; keep it running even when the OS requests reduced motion
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
   var w, h, t = 0;
 
