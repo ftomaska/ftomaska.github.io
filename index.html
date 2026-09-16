@@ -768,12 +768,14 @@
   // voltage indicator so both are much faster than any calcium sensor here.
   // ASAP's fluorescence also *drops* on depolarization rather than rising,
   // so it gets a negative polarity while every GCaMP variant is positive.
+  // Decay tau is held constant across indicators so every trace has the same
+  // visual width; only onset speed (tauRise) and polarity vary by indicator.
   var INDICATORS = {
-    gcamp6s:  { tauRise: 0.8,  tauDecay: 30,  polarity: 1  },
-    jgcamp8f: { tauRise: 0.22, tauDecay: 5,   polarity: 1  },
-    jgcamp8m: { tauRise: 0.32, tauDecay: 9,   polarity: 1  },
-    jgcamp8s: { tauRise: 0.5,  tauDecay: 16,  polarity: 1  },
-    asap:     { tauRise: 0.12, tauDecay: 1.8, polarity: -1 }
+    gcamp6s:  { tauRise: 0.8,  tauDecay: 15,  polarity: 1  },
+    jgcamp8f: { tauRise: 0.22, tauDecay: 15,  polarity: 1  },
+    jgcamp8m: { tauRise: 0.32, tauDecay: 15,  polarity: 1  },
+    jgcamp8s: { tauRise: 0.5,  tauDecay: 15,  polarity: 1  },
+    asap:     { tauRise: 0.12, tauDecay: 15,  polarity: -1 }
   };
   var currentIndicator = 'gcamp6s';
 
