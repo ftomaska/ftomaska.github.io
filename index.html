@@ -1022,9 +1022,11 @@
     var data = imgData.data;
     var isBlank = false;
 
-    // Coarse grid used both to locate text and to carry each cell's "birth"
-    // threshold -- how much gain it takes before that cell blooms.
-    var COLS = 48, ROWS = 30;
+    // Grid used both to locate text and to carry each cell's "birth"
+    // threshold -- how much gain it takes before that cell blooms. One grid
+    // cell per canvas pixel, so the watershed grain matches the small,
+    // crisp fine-noise dots exactly instead of looking blocky.
+    var COLS = W, ROWS = H;
     var BLOB_MIN = 0.10, BLOB_MAX = 0.85; // no blobs at all below BLOB_MIN
     var thresholds = new Float32Array(COLS * ROWS);
     var blobActive = new Uint8Array(COLS * ROWS);
