@@ -340,14 +340,17 @@
   .signal-body .whiteout {
     position: absolute;
     inset: -8px;
-    background-color: #000;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-    background-repeat: repeat;
+    background: #000;
     opacity: 0;
     pointer-events: none;
     z-index: 5;
+    overflow: hidden;
     transition: opacity .12s linear;
+  }
+  .whiteout-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 
   .card .authors {
@@ -620,7 +623,7 @@
         </div>
       </div>
       <div class="signal-body" id="signal-body">
-        <div class="whiteout" id="signal-whiteout" aria-hidden="true"></div>
+        <div class="whiteout" id="signal-whiteout" aria-hidden="true"><canvas class="whiteout-canvas"></canvas></div>
         <div class="cards">
           <div class="card">
             <div class="card-top"><h3>iGluSnFR3</h3><span class="status">Published 2023</span></div>
@@ -671,7 +674,7 @@
         </div>
       </div>
       <div class="signal-body" id="expression-body">
-        <div class="whiteout" id="expression-whiteout" aria-hidden="true"></div>
+        <div class="whiteout" id="expression-whiteout" aria-hidden="true"><canvas class="whiteout-canvas"></canvas></div>
         <div class="cards">
           <div class="card magenta">
             <div class="card-top"><h3>ROI Blink Overlay</h3><span class="status">Released</span></div>
@@ -985,6 +988,40 @@
 
   wireGain('ch1-gain', 'ch1-gain-readout', 'signal-body', 'signal-whiteout');
   wireGain('ch2-gain', 'ch2-gain-readout', 'expression-body', 'expression-whiteout');
+
+  // Live crackling static: redraw random grayscale noise into each whiteout's
+  // canvas every frame, skipping the pixel-fill work while its opacity is 0
+  // so the loop is nearly free when the gain is below the saturation point.
+  function wireNoiseCanvas(whiteoutId) {
+    var whiteout = document.getElementById(whiteoutId);
+    var canvas = whiteout && whiteout.querySelector('canvas');
+    if (!canvas) return;
+
+    var W = 160, H = 100;
+    canvas.width = W;
+    canvas.height = H;
+    var ctx = canvas.getContext('2d');
+    var imgData = ctx.createImageData(W, H);
+    var data = imgData.data;
+
+    function drawFrame() {
+      if (parseFloat(whiteout.style.opacity) > 0) {
+        for (var i = 0; i < data.length; i += 4) {
+          var v = (Math.random() * 256) | 0;
+          data[i] = v;
+          data[i + 1] = v;
+          data[i + 2] = v;
+          data[i + 3] = 255;
+        }
+        ctx.putImageData(imgData, 0, 0);
+      }
+      requestAnimationFrame(drawFrame);
+    }
+    requestAnimationFrame(drawFrame);
+  }
+
+  wireNoiseCanvas('signal-whiteout');
+  wireNoiseCanvas('expression-whiteout');
 })();
 </script>
 
