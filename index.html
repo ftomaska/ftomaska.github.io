@@ -992,12 +992,14 @@
   wireGain('ch1-gain', 'ch1-gain-readout', 'signal-body', 'signal-whiteout');
   wireGain('ch2-gain', 'ch2-gain-readout', 'expression-body', 'expression-whiteout');
 
-  // Live crackling static, but as sparse black dots on a transparent
-  // background rather than a full grayscale wash: each grid cell is either
-  // opaque black or fully transparent, redrawn every frame. The fraction of
-  // cells drawn black is the gain-driven intensity, so at max gain every
-  // cell goes black (100% noise, 0% text) and at low gain the underlying
-  // card content shows through untouched.
+  // Two-phase gain-clip effect, redrawn every frame as sparse black dots on
+  // a transparent background: first a patchwork of coarse "blob" regions
+  // oversaturate one by one (like a sensor blooming/clipping), then fine
+  // per-pixel noise gradually fills in whatever the blobs haven't already
+  // covered. Nothing happens right at the low end of the range — each blob
+  // only pops in once gain-derived intensity passes its own random birth
+  // threshold — so the takeover starts gradual and accelerates toward a
+  // full blackout (100% noise, 0% text) at max gain.
   function wireNoiseCanvas(whiteoutId) {
     var canvas = document.querySelector('#' + whiteoutId + ' canvas');
     if (!canvas) return;
@@ -1009,6 +1011,32 @@
     var imgData = ctx.createImageData(W, H);
     var data = imgData.data;
     var isBlank = false;
+
+    // Coarse "blob" grid: each cell has its own random threshold, spread
+    // out over the intensity range, so blobs pop in one at a time rather
+    // than the whole area changing at once.
+    var COLS = 14, ROWS = 9;
+    var BLOB_MIN = 0.12, BLOB_MAX = 0.85; // no blobs at all below BLOB_MIN
+    var thresholds = new Float32Array(COLS * ROWS);
+    for (var c = 0; c < thresholds.length; c++) {
+      thresholds[c] = BLOB_MIN + Math.random() * (BLOB_MAX - BLOB_MIN);
+    }
+    var blobActive = new Uint8Array(COLS * ROWS);
+    var JITTER = 0.05; // slight per-frame wobble at each blob's edge, so it feels like it's boiling rather than snapping on
+
+    // Precompute which coarse cell each pixel column/row falls in.
+    var colCell = new Int32Array(W);
+    for (var x = 0; x < W; x++) colCell[x] = Math.min(COLS - 1, Math.floor((x / W) * COLS));
+    var rowCell = new Int32Array(H);
+    for (var y = 0; y < H; y++) rowCell[y] = Math.min(ROWS - 1, Math.floor((y / H) * ROWS));
+
+    // Fine per-pixel noise only starts filling in the remaining gaps well
+    // into the range, and eases in so the blob phase gets to run its course
+    // first.
+    function fineNoiseProb(t) {
+      var s = Math.max(0, (t - 0.55) / 0.45);
+      return s * s;
+    }
 
     function drawFrame() {
       var intensity = noiseIntensity[whiteoutId] || 0;
@@ -1022,14 +1050,29 @@
         return;
       }
       isBlank = false;
-      for (var i = 0; i < data.length; i += 4) {
-        if (Math.random() < intensity) {
-          data[i] = 0;
-          data[i + 1] = 0;
-          data[i + 2] = 0;
-          data[i + 3] = 255;
-        } else {
-          data[i + 3] = 0;
+
+      for (var ci = 0; ci < thresholds.length; ci++) {
+        var jitter = (Math.random() - 0.5) * JITTER;
+        blobActive[ci] = (intensity + jitter) > thresholds[ci] ? 1 : 0;
+      }
+      var fineProb = fineNoiseProb(intensity);
+
+      var idx = 0;
+      for (var y = 0; y < H; y++) {
+        var rc = rowCell[y] * COLS;
+        for (var x = 0; x < W; x++) {
+          var i = idx * 4;
+          idx++;
+          var isBlack = blobActive[rc + colCell[x]] === 1;
+          if (!isBlack && fineProb > 0 && Math.random() < fineProb) isBlack = true;
+          if (isBlack) {
+            data[i] = 0;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+            data[i + 3] = 255;
+          } else {
+            data[i + 3] = 0;
+          }
         }
       }
       ctx.putImageData(imgData, 0, 0);
