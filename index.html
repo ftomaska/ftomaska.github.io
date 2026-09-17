@@ -1104,12 +1104,17 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(computeThresholds);
     setTimeout(computeThresholds, 300); // catch any late layout settling
 
-    // Fine per-pixel noise only starts filling in the remaining gaps well
-    // into the range, and eases in so the watershed phase gets to run its
-    // course first.
+    // Fine per-pixel noise has two components: a faint, uniform "shot noise"
+    // that starts almost immediately past the default gain (so by ~0.95V
+    // there's already a light sprinkle of noise even in text-free
+    // background areas, not just around the watershed), plus a much
+    // steeper term late in the range that mops up whatever the watershed
+    // hasn't reached yet.
     function fineNoiseProb(t) {
-      var s = Math.max(0, (t - 0.55) / 0.45);
-      return s * s;
+      var ambient = Math.pow(t, 0.7) * 0.16;
+      var lateS = Math.max(0, (t - 0.55) / 0.45);
+      var late = lateS * lateS;
+      return Math.min(1, ambient + late);
     }
 
     function drawFrame() {
