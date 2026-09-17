@@ -349,6 +349,8 @@
     display: block;
     width: 100%;
     height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
   }
 
   .card .authors {
@@ -1000,7 +1002,7 @@
     var canvas = document.querySelector('#' + whiteoutId + ' canvas');
     if (!canvas) return;
 
-    var W = 300, H = 190; // fine grid -> small dots
+    var W = 480, H = 300; // finer grid -> smaller, crisper dots
     canvas.width = W;
     canvas.height = H;
     var ctx = canvas.getContext('2d');
