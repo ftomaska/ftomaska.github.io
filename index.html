@@ -541,7 +541,7 @@
     <ul class="navlinks" style="margin-left: auto;">
       <li><a href="#about">About</a></li>
       <li><a href="#signal">Signal</a></li>
-      <li><a href="#noise">Noise</a></li>
+      <li><a href="#expression">Expression</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </div>
@@ -566,7 +566,7 @@
         <span class="legend-desc">- developing tools, hardware and software for neuroscience</span>
       </div>
       <div class="legend-row">
-        <button type="button" class="ch-toggle" data-channel="magenta" aria-pressed="true">ch2 · noise</button>
+        <button type="button" class="ch-toggle" data-channel="magenta" aria-pressed="true">ch2 · expression</button>
         <span class="legend-desc">- output beyond the realm of peer review</span>
       </div>
     </div>
@@ -646,10 +646,10 @@
     </div>
   </section>
 
-  <section id="noise">
+  <section id="expression">
     <div class="wide">
       <div class="section-head">
-        <div class="eyebrow"><span class="dot magenta"></span> CH2 — Noise</div>
+        <div class="eyebrow"><span class="dot magenta"></span> CH2 — Expression</div>
         <div class="section-head-row">
           <p class="dek">self "expression". a raw and organic process. not entirely random, but also not entirely controlled</p>
           <div class="gain-control">
@@ -659,8 +659,8 @@
           </div>
         </div>
       </div>
-      <div class="signal-body" id="noise-body">
-        <div class="whiteout" id="noise-whiteout" aria-hidden="true"></div>
+      <div class="signal-body" id="expression-body">
+        <div class="whiteout" id="expression-whiteout" aria-hidden="true"></div>
         <div class="cards">
           <div class="card magenta">
             <div class="card-top"><h3>ROI Blink Overlay</h3><span class="status">Released</span></div>
@@ -973,7 +973,7 @@
   }
 
   wireGain('ch1-gain', 'ch1-gain-readout', 'signal-body', 'signal-whiteout');
-  wireGain('ch2-gain', 'ch2-gain-readout', 'noise-body', 'noise-whiteout');
+  wireGain('ch2-gain', 'ch2-gain-readout', 'expression-body', 'expression-whiteout');
 })();
 </script>
 
