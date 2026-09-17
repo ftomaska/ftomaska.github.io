@@ -340,12 +340,10 @@
   .signal-body .whiteout {
     position: absolute;
     inset: -8px;
-    background: #000;
-    opacity: 0;
+    background: transparent;
     pointer-events: none;
     z-index: 5;
     overflow: hidden;
-    transition: opacity .12s linear;
   }
   .whiteout-canvas {
     display: block;
@@ -956,12 +954,15 @@
 
 <script>
 (function () {
+  // Per-whiteout black-dot density (0 = fully transparent/text visible,
+  // 1 = every dot drawn black = fully obscured), driven by the gain slider.
+  var noiseIntensity = {};
+
   function wireGain(sliderId, readoutId, bodyId, whiteoutId) {
     var slider = document.getElementById(sliderId);
     var readout = document.getElementById(readoutId);
     var body = document.getElementById(bodyId);
-    var whiteout = document.getElementById(whiteoutId);
-    if (!slider || !body || !whiteout) return;
+    if (!slider || !body) return;
 
     var GAIN_MIN = parseFloat(slider.min);   // 0.2 V — signal too dim to read
     var GAIN_DEFAULT = 0.8;                  // nominal operating point
@@ -973,12 +974,12 @@
         var t = (v - GAIN_MIN) / (GAIN_DEFAULT - GAIN_MIN);
         t = Math.max(0, Math.min(1, t));
         body.style.opacity = String(t);
-        whiteout.style.opacity = '0';
+        noiseIntensity[whiteoutId] = 0;
       } else {
         var t2 = (v - GAIN_DEFAULT) / (GAIN_MAX - GAIN_DEFAULT);
         t2 = Math.max(0, Math.min(1, t2));
         body.style.opacity = '1';
-        whiteout.style.opacity = String(t2);
+        noiseIntensity[whiteoutId] = t2;
       }
     }
 
@@ -989,32 +990,47 @@
   wireGain('ch1-gain', 'ch1-gain-readout', 'signal-body', 'signal-whiteout');
   wireGain('ch2-gain', 'ch2-gain-readout', 'expression-body', 'expression-whiteout');
 
-  // Live crackling static: redraw random grayscale noise into each whiteout's
-  // canvas every frame, skipping the pixel-fill work while its opacity is 0
-  // so the loop is nearly free when the gain is below the saturation point.
+  // Live crackling static, but as sparse black dots on a transparent
+  // background rather than a full grayscale wash: each grid cell is either
+  // opaque black or fully transparent, redrawn every frame. The fraction of
+  // cells drawn black is the gain-driven intensity, so at max gain every
+  // cell goes black (100% noise, 0% text) and at low gain the underlying
+  // card content shows through untouched.
   function wireNoiseCanvas(whiteoutId) {
-    var whiteout = document.getElementById(whiteoutId);
-    var canvas = whiteout && whiteout.querySelector('canvas');
+    var canvas = document.querySelector('#' + whiteoutId + ' canvas');
     if (!canvas) return;
 
-    var W = 160, H = 100;
+    var W = 300, H = 190; // fine grid -> small dots
     canvas.width = W;
     canvas.height = H;
     var ctx = canvas.getContext('2d');
     var imgData = ctx.createImageData(W, H);
     var data = imgData.data;
+    var isBlank = false;
 
     function drawFrame() {
-      if (parseFloat(whiteout.style.opacity) > 0) {
-        for (var i = 0; i < data.length; i += 4) {
-          var v = (Math.random() * 256) | 0;
-          data[i] = v;
-          data[i + 1] = v;
-          data[i + 2] = v;
-          data[i + 3] = 255;
+      var intensity = noiseIntensity[whiteoutId] || 0;
+      if (intensity <= 0) {
+        if (!isBlank) {
+          for (var k = 3; k < data.length; k += 4) data[k] = 0;
+          ctx.putImageData(imgData, 0, 0);
+          isBlank = true;
         }
-        ctx.putImageData(imgData, 0, 0);
+        requestAnimationFrame(drawFrame);
+        return;
       }
+      isBlank = false;
+      for (var i = 0; i < data.length; i += 4) {
+        if (Math.random() < intensity) {
+          data[i] = 0;
+          data[i + 1] = 0;
+          data[i + 2] = 0;
+          data[i + 3] = 255;
+        } else {
+          data[i + 3] = 0;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
       requestAnimationFrame(drawFrame);
     }
     requestAnimationFrame(drawFrame);
